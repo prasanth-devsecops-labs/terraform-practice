@@ -1,0 +1,22 @@
+terraform init, plan, apply -auto-approve, destroy
+
+resource block >> arguments
+
+output block  >> attributes
+
+data block
+
+variables
+
+
+command line
+terraform.tfvars
+env   >> export TF_VAR_instance_type="t3.large"
+variables.tf
+
+
+loops:
+
+count
+for_each   
+dynamic block
