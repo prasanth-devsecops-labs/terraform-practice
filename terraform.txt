@@ -1,4 +1,4 @@
-terraform init, plan, apply -auto-approve, destroy
+terraform init, plan, apply -auto-approve, destroy, validate, fmt
 
 resource block >> arguments
 
@@ -6,8 +6,7 @@ output block  >> attributes
 
 data block
 
-variables
-
+variables:
 
 command line
 terraform.tfvars
@@ -17,6 +16,10 @@ variables.tf
 
 loops:
 
-count
-for_each   
+count > index base > works with list
+for_each  > works with map and set
 dynamic block
+
+
+permissions .ssh folder 700
+authorized_keys 600
