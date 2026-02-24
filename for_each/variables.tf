@@ -6,6 +6,11 @@ variable "instances" {
     }
 }
 
+variable "instances_list" {
+    type = list
+    default = ["mongodb", "redis"]
+}
+
 
 variable "zone_id" {
     type = string

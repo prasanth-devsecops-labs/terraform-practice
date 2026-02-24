@@ -1,11 +1,12 @@
 resource "aws_instance" "example" {
-  for_each = var.instances
+  # for_each = toset(var.instances_list)
+  count = length(var.instances_list) 
   ami           = "ami-0220d79f3f480ecf5"
-  instance_type = each.value
+  instance_type = "t3.micro"
   vpc_security_group_ids = [aws_security_group.allow-tls.id]
 
   tags = {
-    Name = each.key
+    # Name = each.key
     Project = "roboshop"
   }
 }
@@ -34,22 +35,23 @@ resource "aws_security_group" "allow-tls" {
   }
 }
 
-resource "aws_route53_record" "pvt_dns_records" {
-  for_each = aws_instance.example
-  zone_id = var.zone_id
-  name    = "${each.key}.${var.domain_name}" 
-  type    = "A"
-  ttl     = 1
-  records = [each.value.private_ip]
-  allow_overwrite = true
-}
+# resource "aws_route53_record" "pvt_dns_records" {
+#   for_each = aws_instance.example
+#   zone_id = var.zone_id
+#   name    = "${each.key}.${var.domain_name}" 
+#   type    = "A"
+#   ttl     = 1
+#   records = [each.value.private_ip]
+#   allow_overwrite = true
+# }
 
 resource "aws_route53_record" "pub_dns_records" {
   zone_id = var.zone_id
   name    = "roboshop.${var.domain_name}" 
   type    = "A"
   ttl     = 1
+  records = [aws_instance.example[index(var.instances_list, "redis")].public_ip]
   # records = [lookup(aws_instance.example, "frontend").public_ip]
-  records = [try(aws_instance.example["mongodb"].public_ip, "127.0.0.1")]
+  # records = [try(aws_instance.example["mongodb"].public_ip, "127.0.0.1")]
   allow_overwrite = true
 }
