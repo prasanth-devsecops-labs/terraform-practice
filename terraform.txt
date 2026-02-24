@@ -1,25 +1,115 @@
-terraform init, plan, apply -auto-approve, destroy, validate, fmt
+count based loops
+    list
+    count.index
 
-resource block >> arguments
+for based loop
+    set or map
+    each each.key and each.value
 
-output block  >> attributes
-
-data block
-
-variables:
-
-command line
-terraform.tfvars
-env   >> export TF_VAR_instance_type="t3.large"
-variables.tf
-
-
-loops:
-
-count > index base > works with list
-for_each  > works with map and set
 dynamic block
+    variable with block name
+
+data sources
+    query the provider for existing information
+
+functions
+
+state:
+    Terraform tracks/stores the information about infra in it's memory file called state file.
+    .tf files
+
+    Declarative approach, desired state will be achieved based on configuration.
+
+desired infra == actual infra
+
+ 
+state file == actual infra
+.tf file == actual infra
+
+state file locked by Terraform when it is performing actions on that.
+
+central location to store state file when working with collabarative environment >> S3 bucket for store
+
+create s3 bucket general purpose with unique name.
+
+remote state inside Terraform provider block, backend 
+
+use_lockfile = true (new approach) instead of dynamoDB(old approach)
 
 
-permissions .ssh folder 700
-authorized_keys 600
+To secure state file:
+
+S3 access control to manage state file
+version control enable
+data replications on another bucket.
+
+
+
+locals:
+=======
+variables with extra capabilities/features.
+
+locals = {
+    var = $var1 - $var2
+}
+
+local.var
+
+we can refer other variables inside locals.
+we can not override values of variables declared inside locals.
+we can keep functions/expressions also inside locals.
+
+common tags can't change by everyone, we can keep them inside locals.
+
+final_tags = merge(local.common_tags, var.ec2_tags)
+
+tags = local.final_tags
+
+Readability
+
+
+
+provisioners:
+=============
+
+local-exec (execution on host where Terraform is installed and running)
+remote-exec (execution on remote machine where Terraform is going to execute commands)
+
+to take actions or run scripts before/after resource creation/deletion.
+
+self is the special variable
+command = "echo ${self.private_ip} > file.ini"
+
+
+provisioners only works at create time or destroy time, not in between updates/modifications to resources.
+
+when = destroy
+
+on_failure = continue
+
+
+connectioon = {
+    type = "ssh"
+    user = "ec2-user"
+    password = "DevOps321"
+    host = self.public_ip        
+}
+
+provisioner "remote-exec" {
+    inline = [
+        "sudo dnf install nginx",
+        "sudo systemctl restart nginx"
+    ]
+    when = destroy
+}
+
+provisioner "remote-exec" {
+    inline = [
+        "sudo systemctl stop nginx",
+    ]
+    when = destroy
+}
+
+
+
+
